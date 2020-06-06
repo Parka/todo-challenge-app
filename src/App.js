@@ -15,6 +15,8 @@ class App extends React.Component {
         this.props.dispatchloadTasks()
     }
     render() {
+
+        if(!this.props.tasks) return "Loading...";
         return (
             <div className="App">
                 <input
@@ -52,8 +54,8 @@ class App extends React.Component {
 
 const mapState = state => {
     return ({
-    tasks: state.taskReducer
-})
+        tasks: state.taskReducer
+    })
 }
 
 const mapDispatchToProps = {
