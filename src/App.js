@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { loadTasks, createNewTask} from './reducers/taskReducer';
 import './App.css'
 
 class App extends React.Component {
@@ -11,7 +12,7 @@ class App extends React.Component {
         }
     }
     componentDidMount() {
-        this.props.loadTasks()
+        this.props.dispatchloadTasks()
     }
     render() {
         return (
@@ -25,7 +26,7 @@ class App extends React.Component {
                         })}
                 />
                 <button onClick={() => {
-                    this.props.createNewTask(this.state.taskName)
+                    this.props.dispatchCreateNewTask(this.state.taskName)
                     this.setState({
                         ...this.state,
                         taskName: ''
@@ -49,8 +50,14 @@ class App extends React.Component {
     }
 }
 
-const mapState = state => ({
+const mapState = state => {
+    return ({
     tasks: state.taskReducer
 })
+}
 
-export default connect(mapState)(App)
+const mapDispatchToProps = {
+    dispatchloadTasks: loadTasks,
+    dispatchCreateNewTask: createNewTask,
+}
+export default connect(mapState, mapDispatchToProps)(App)
