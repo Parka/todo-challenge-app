@@ -4,9 +4,13 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { Provider } from 'react-redux';
 import configureStore from './store';
+import { createGlobalStyle } from 'styled-components'
+import reboot from 'styled-reboot'
 
+const GlobalStyle = createGlobalStyle`${reboot()}`
 ReactDOM.render(
     <React.StrictMode>
+        <GlobalStyle />
         <Provider store={configureStore()}>
             <App />
         </Provider>
