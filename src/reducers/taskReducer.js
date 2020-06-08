@@ -58,18 +58,23 @@ export default (state = initialState, action) => {
             return action.payload.tasks
         }
         case 'ADD_NEW_TASK': {
-            const tasks = state.push(action.payload.task)
+            const tasks = [...state, action.payload.task]
             return tasks
         }
         case 'CHANGE_TASK_STATUS': {
             const index = state.findIndex(task => task.id === action.payload.taskId)
-            state[index] = action.payload.task
-            return state
+            return [
+                ...state.slice(0, index),
+                action.payload.task,
+                ...state.slice(index+1)
+            ]
         }
         case 'DELETE_TASK': {
             const index = state.findIndex(task => task.id === action.payload.taskId)
-            state.splice(index, 1)
-            return state
+            return [
+                ...state.slice(0, index),
+                ...state.slice(index+1)
+            ]
         }
         default:
             return state
