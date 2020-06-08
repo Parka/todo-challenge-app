@@ -123,7 +123,7 @@ const App = () => {
                 <TaskList>
                     {tasks.map(({id, done, name}) => (
                         <Task key={id}>
-                            <label>
+                            <label onClick={e=>e.target.blur()}>
                                 <input
                                     tabIndex={0}
                                     type="checkbox"
