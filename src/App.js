@@ -1,65 +1,48 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import { loadTasks, createNewTask} from './reducers/taskReducer';
+import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { loadTasks, createNewTask, changeTaskStatus, deleteTask} from './reducers/taskReducer';
 import './App.css'
 
-class App extends React.Component {
-    constructor() {
-        super()
+const App = () => {
+    const [taskName, setTaskName] = useState('');
+    const tasks = useSelector(state => state.taskReducer)
 
-        this.state = {
-            taskName: 'First Task'
-        }
-    }
-    componentDidMount() {
-        this.props.dispatchloadTasks()
-    }
-    render() {
+    const dispatch = useDispatch();
+    useEffect(()=>{
+        dispatch(loadTasks());
+    }, []);
 
-        if(!this.props.tasks) return "Loading...";
-        return (
-            <div className="App">
+
+    if(!tasks) return "Loading...";
+    return (
+        <div className="App">
+            <form action="" onSubmit={e=>{
+                dispatch(createNewTask(taskName));
+                setTaskName('');
+                e.preventDefault();
+            }}>
                 <input
-                    value={this.state.taskName}
-                    onChange={e =>
-                        this.setState({
-                            ...this.state,
-                            taskName: e.target.value
-                        })}
+                    value={taskName}
+                    placeholder="First Task"
+                    onChange={e => setTaskName(e.target.value)}
                 />
-                <button onClick={() => {
-                    this.props.dispatchCreateNewTask(this.state.taskName)
-                    this.setState({
-                        ...this.state,
-                        taskName: ''
-                    })
-                }}>Add</button>
-                <ul>
-                    {this.props.tasks.map((task) => (
-                        <li>
-                            <input
-                                type="checkbox"
-                                checked={task.done}
-                                onChange={() => this.props.changeTaskStatus(task.id, !task.done)}
-                            />
-                            {task.name} ({task.done ? 'Hecha' : 'Por hacer'})
-                            <button onClick={() => this.props.deleteTask(task.id)}>Borrar</button>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        )
-    }
+                <button>Add</button>
+            </form>
+            <ul>
+                {tasks.map(({id, done, name}) => (
+                    <li key={id}>
+                        <input
+                            type="checkbox"
+                            checked={done}
+                            onChange={() => dispatch(changeTaskStatus(id, !done))}
+                        />
+                        {name} ({done ? 'Hecha' : 'Por hacer'})
+                        <button onClick={() => dispatch(deleteTask(id))}>Borrar</button>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )
 }
 
-const mapState = state => {
-    return ({
-        tasks: state.taskReducer
-    })
-}
-
-const mapDispatchToProps = {
-    dispatchloadTasks: loadTasks,
-    dispatchCreateNewTask: createNewTask,
-}
-export default connect(mapState, mapDispatchToProps)(App)
+export default App;
