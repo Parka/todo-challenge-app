@@ -41,6 +41,7 @@ const Task = styled.li`
     }
     span{
         overflow-wrap: anywhere;
+        font-weight: bold;
     }
     .task-body{
         display: flex;
@@ -56,6 +57,7 @@ const Task = styled.li`
         color: #aaaaaa;
         span{
             text-decoration: line-through;
+            font-weight: normal;
         }
     }
 

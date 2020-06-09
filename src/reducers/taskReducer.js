@@ -1,5 +1,6 @@
 import * as env from '../env'
 import axios from 'axios'
+import { toast } from 'react-toastify';
 
 const route = 'tasks'
 const endpoint = `${env.api}/${route}`
@@ -30,26 +31,45 @@ export const deleteTaskAction = ( taskId ) => ({
 // ASYNC ACTION GENERATORS
 export const loadTasks = () =>
     async (dispatch) => {
-        const result = await axios.get(endpoint)
-        dispatch(setTasksAction( result.data ))
+        try {
+            const result = await axios.get(endpoint)
+            dispatch(setTasksAction( result.data ))
+        } catch (e) {
+            toast.error("Failed to get tasks from the server!")
+        }
     }
 
 export const createNewTask = (name) =>
     async (dispatch) => {
-        const result = await axios.post(endpoint, { name })
-        dispatch(addNewTaskAction( result.data ))
+        try {
+            const result = await axios.post(endpoint, { name })
+            dispatch(addNewTaskAction( result.data ))
+        } catch (e) {
+            toast.error("Failed to add new task to the server!")
+        }
     }
 
 export const changeTaskStatus = (taskId, done) =>
     async (dispatch) => {
-        const result = await axios.patch(`${endpoint}/${taskId}`, { done })
-        dispatch(changeTaskStatusAction( taskId, result.data ))
+        try{
+            const result = await axios.patch(`${endpoint}/${taskId}`, { done })
+            console.log(result);
+            dispatch(changeTaskStatusAction( taskId, result.data ))
+        } catch ({response}) {
+            dispatch(loadTasks())
+            toast.error(response.data.message)
+        }
     }
 
 export const deleteTask = (taskId) =>
     async (dispatch) => {
-        await axios.delete(`${endpoint}/${taskId}`)
-        dispatch(deleteTaskAction( taskId ))
+        try{
+            await axios.delete(`${endpoint}/${taskId}`)
+            dispatch(deleteTaskAction( taskId ))
+        } catch ({response}) {
+            dispatch(loadTasks())
+            toast.error(response.data.message)
+        }
     }
 
 export default (state = initialState, action) => {
