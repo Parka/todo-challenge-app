@@ -6,6 +6,13 @@ const route = 'tasks'
 const endpoint = `${env.api}/${route}`
 const initialState = null
 
+
+const getRequestConfig = token => ({
+  headers: {
+    'Authorization': `Bearer ${token}`
+  }
+})
+
 // SYNC ACTION GENERATORS
 export const setTasksAction = ( tasks ) => ({
             type: 'SET_TASKS',
@@ -30,9 +37,10 @@ export const deleteTaskAction = ( taskId ) => ({
 
 // ASYNC ACTION GENERATORS
 export const loadTasks = () =>
-    async (dispatch) => {
+    async (dispatch, getState) => {
+        const token = getState().loginReducer;
         try {
-            const result = await axios.get(endpoint)
+            const result = await axios.get(endpoint, getRequestConfig(token))
             dispatch(setTasksAction( result.data ))
         } catch (e) {
             toast.error("Failed to get tasks from the server!")
@@ -40,9 +48,10 @@ export const loadTasks = () =>
     }
 
 export const createNewTask = (name) =>
-    async (dispatch) => {
+    async (dispatch, getState) => {
+        const token = getState().loginReducer;
         try {
-            const result = await axios.post(endpoint, { name })
+            const result = await axios.post(endpoint, { name }, getRequestConfig(token))
             dispatch(addNewTaskAction( result.data ))
         } catch (e) {
             toast.error("Failed to add new task to the server!")
@@ -50,9 +59,10 @@ export const createNewTask = (name) =>
     }
 
 export const changeTaskStatus = (taskId, done) =>
-    async (dispatch) => {
-        try{
-            const result = await axios.patch(`${endpoint}/${taskId}`, { done })
+    async (dispatch, getState) => {
+        const token = getState().loginReducer;
+        try {
+            const result = await axios.patch(`${endpoint}/${taskId}`, { done }, getRequestConfig(token))
             console.log(result);
             dispatch(changeTaskStatusAction( taskId, result.data ))
         } catch ({response}) {
@@ -62,9 +72,10 @@ export const changeTaskStatus = (taskId, done) =>
     }
 
 export const deleteTask = (taskId) =>
-    async (dispatch) => {
-        try{
-            await axios.delete(`${endpoint}/${taskId}`)
+    async (dispatch, getState) => {
+        const token = getState().loginReducer;
+        try {
+            await axios.delete(`${endpoint}/${taskId}`, getRequestConfig(token))
             dispatch(deleteTaskAction( taskId ))
         } catch ({response}) {
             dispatch(loadTasks())
